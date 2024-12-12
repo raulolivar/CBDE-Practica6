@@ -1,8 +1,72 @@
 from neo4j import GraphDatabase
 import datetime as dt
+import random
 
-def create_database():
-    return 0
+name = ["Ignasi", "Victor", "Lamine Yamal", "Gerard", "Marc", "Fermin Lopez", "Pau Cubarsi", "Raphinha", "Robert Lewandowski", "Gavi"]
+address = ["Barcelona", "Tremp", "Tarrega", "Badalona", "Girona", "Tarragona", "Santa Coloma", "Sort", "Wisconsin", "Lleida"]
+nation = ["Catalunya", "Paisos Catalans", "Republica Catalana", "Unio de Republiques Socialistes Catalanes", "Corona Aragonesa", "EEUU", "UAE", "Euskadi", "Wisconsin", "Andalusia"]
+flag = ['A', 'C', 'A', 'B', 'C', 'B', 'A', 'B', 'C', 'C']
+price = [4505, 32243, 12512, 34800, 21657, 54347, 97562, 31252, 26347, 11463601]
+region = ["Barcelona", "Girona", "Tarragona", "Lleida", "Catalunya Nord", "Valencia", "Madrid", "Saragossa", "Wisconsin", "Utah"]
+brand = ["Mango", "CaixaBank", "Naturgy", "Glovo", "EstrellaDamm", "Moritz", "HM", "Deliveroo", "BBVA", "Iberdrola"]
+
+def create_database(session):
+    session.run("MATCH (n) DETACH DELETE n") # Borrar nodes BD
+
+    create_part_nodes(session)
+    create_supp_nodes(session)
+    create_partsupp_nodes(session)
+    create_nation_nodes(session)
+    create_order_nodes(session)
+    create_customer_nodes(session)
+    create_lineitem_nodes(session)
+    create_relationships(session)
+
+def create_part_nodes(session):
+    for i in 10: 
+        session.run("CREATE (part" + i + ": Part{p_partkey: " + i + ", p_name: 'Partkey" + i + "'"
+        ", p_mfgr: 'AEIOU', p_brand '" + brand[i] + "', p_type: 'Cotxe'" + 
+        ", p_size: " + str(random.randint(1,5)) + ", p_container: 'Box" + i + "'"
+        ", p_retailprice: " + str(float(random.randint(1200, 4500) / 100)) + 
+        ", p_comment: 'Todo mal'})")
+
+def create_supp_nodes(session):
+    for i in 10:
+        session.run("CREATE (supp" + i + ": Supplier {s_suppkey: " + i + ", s_name: 'Suppkey" + i + "'"
+        ", s_address: '" + address[i] + "', s_phone: " str(random.randint(600000000, 699999999)) + 
+        ", s_acctbal: " random.randint(1000, 5000) + ", s_comment: 'Todo bien'})")
+
+def create_partsupp_nodes(session):
+    for i in 10:
+        session.run("CREATE (partsupp" + i + ": PartSupp{ps_partkey: " + i + ", ps_suppkey: " + i +
+                    ", ps_availqty: " + str(random.randint(150, 460)) +
+                    ", ps_supplycost: " + str(float(random.randint(250, 750) / 100)) + ", ps_comment: 'Seguimos mal'})")
+
+    session.run("CREATE INDEX ON: PartSupp(ps_supplycost)")
+
+def create_nation_nodes(session):
+    for i in 10:
+          session.run("CREATE (nation" + i + ": Nation{n_nationkey: " + i + ", n_name: '" + nation[i] + "'"
+                    ", n_comment: 'Seguimos bien'})") 
+
+def create_region_nodes(session):
+    for i in 10:
+        session.run("CREATE (region" + i + ": Region{r_regionkey: " + i + ", r_name: '" + region[i] + "'"
+                    ", r_comment: 'De mal en peor'})")
+
+def create_order_nodes(session):
+    for i in 10:
+        session.run("CREATE (order" + i + ": Order{o_orderkey: " + i + ", o_orderstatus: 'Z" + "'"
+                    ", o_totalprice: " + price[i] + ", o_orderdate: '" + dt.datetime(2024, 5, i) +
+                    "', o_orderpriority: 'H" + 
+                    "', o_clerk: '" + "Oscar" +
+                    "', o_shippriority: '" + str(random.randint(1, 20)) +
+                    "', o_comment: 'Lookin good'})")
+
+def create_customer_nodes(session):
+    for i in 10:
+        session.run()
+
 
 def is_valid_date(date_str):
     """
