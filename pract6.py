@@ -20,7 +20,7 @@ def create_database(session):
     create_order_nodes(session)
     create_customer_nodes(session)
     create_lineitem_nodes(session)
-    create_relationships(session)
+    create_relations(session)
 
 def create_part_nodes(session):
     for i in 10: 
@@ -32,9 +32,13 @@ def create_part_nodes(session):
 
 def create_supp_nodes(session):
     for i in 10:
-        session.run("CREATE (supp" + i + ": Supplier {s_suppkey: " + i + ", s_name: 'Suppkey" + i + "'"
-        ", s_address: '" + address[i] + "', s_phone: " str(random.randint(600000000, 699999999)) + 
-        ", s_acctbal: " random.randint(1000, 5000) + ", s_comment: 'Todo bien'})")
+        session.run("CREATE (supp" + str(i) + ": Supplier {s_suppkey: " + str(i) + 
+            ", s_name: 'Suppkey" + str(i) + "', " +
+            "s_address: '" + address[i] + "', " +
+            "s_phone: '" + str(random.randint(600000000, 699999999)) + "', " +
+            "s_acctbal: " + str(random.randint(1000, 5000)) + ", " +
+            "s_comment: 'Todo bien'})")
+
 
 def create_partsupp_nodes(session):
     for i in 10:
@@ -65,8 +69,59 @@ def create_order_nodes(session):
 
 def create_customer_nodes(session):
     for i in 10:
-        session.run()
+        session.run("CREATE (customer" + i + ": Customer{c_custkey: " + i + ", c_name: '" + name[i] +
+                    "', c_address: '" + address[i] + "', c_phone: " + str(random.randint(600000000, 699999999)) +
+                    ", c_acctbal: " + str(random.random()) +
+                    ", c_mktsegment: 'Automobile', s_comment: 'Todo bien'})")
 
+def create_lineitem_nodes(session):
+    for i in 10:
+        session.run("CREATE (lineitem" + i + ": Lineitem{l_linenumber: " + i + ", l_quantity: " + str(random.randint(15, 50)) +
+                    ", l_extendedprice: " + price[i] + ", l_discount: " + str(random.randint(0,100) / 100) +
+                    ", l_tax: " + str(0.21) +
+                    ", l_returnflag: '" + flag[i] +
+                    "', l_linestatus: '" + flag[i] +
+                    "', l_shipdate: '" + str(dt.datetime(2024, 5, i+1)) +
+                    "', l_commitdate: '" + str(dt.datetime(2024, 5, i+2)) +
+                    "', l_receiptdate: '" + str(dt.datetime(2024, 5, i+3)) +
+                    "', l_shipinstruct: 'Fast af boi" + 
+                    "', l_shipmode: '" + flag[i] + 
+                    "', l_comment: 'Las cosas no van tan mal por aqui'})")
+
+def create_relations(session):
+    # PART TO PARTSUPP
+    session.run("MATCH (part1: Part{p_partkey: 1}), (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 1}) "
+                "CREATE (part1) -[:BELONGS_TO]-> (partsupp1)")
+    session.run("MATCH (part2: Part{p_partkey: 2}), (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 2}) "
+                "CREATE (part2) -[:BELONGS_TO]-> (partsupp2)")
+    session.run("MATCH (part3: Part{p_partkey: 3}), (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 3}) "
+                "CREATE (part3) -[:BELONGS_TO]-> (partsupp3)")
+    session.run("MATCH (part4: Part{p_partkey: 4}), (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 4}) "
+                "CREATE (part4) -[:BELONGS_TO]-> (partsupp4)")
+    session.run("MATCH (part5: Part{p_partkey: 5}), (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 5}) "
+                "CREATE (part5) -[:BELONGS_TO]-> (partsupp5)")
+    session.run("MATCH (part6: Part{p_partkey: 6}), (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 6}) "
+                "CREATE (part6) -[:BELONGS_TO]-> (partsupp6)")
+    session.run("MATCH (part7: Part{p_partkey: 7}), (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 7}) "
+                "CREATE (part7) -[:BELONGS_TO]-> (partsupp7)")
+    session.run("MATCH (part8: Part{p_partkey: 8}), (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 8}) "
+                "CREATE (part8) -[:BELONGS_TO]-> (partsupp8)")
+    session.run("MATCH (part9: Part{p_partkey: 9}), (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 9}) "
+                "CREATE (part9) -[:BELONGS_TO]-> (partsupp9)")
+    session.run("MATCH (part10: Part{p_partkey: 10}), (partsupp5: PartSupp{ps_suppkey: 10, ps_partkey: 10}) "
+                "CREATE (part10) -[:BELONGS_TO]-> (partsupp10)")
+
+def query1(session, date):
+    return 0
+
+def query2(session, size, type, region):
+    return 0
+
+def query3(session, segment, date1, date2):
+    return 0
+
+def query4(session, date, region):
+    return 0
 
 def is_valid_date(date_str):
     """
@@ -82,13 +137,8 @@ def is_valid_date(date_str):
 
 def start_program():
     # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
-    URI = "bolt://localhost:7687"
-    AUTH = ("neo4j", "neo4j")
-
-    with GraphDatabase.driver(URI, auth=AUTH) as driver:
-        driver.verify_connectivity()
-    driver = GraphDatabase.driver(URI, auth=AUTH)
-    session = driver.session
+    driver = GraphDatabase.driver("bolt://localhost", auth=("neo4j", "Practica6"))
+    session = driver.session()
     create_database(session)
     
     print("Please choose an operation:\n",
@@ -108,7 +158,7 @@ def start_program():
             while not is_valid_date(ship_date):
                 ship_date = input("Invalid format! Please enter a valid shipment date (YYYY-MM-DD): ")
 
-            query1_results = query1(database["orders"],
+            query1_results = query1(session,
                                     dt.datetime.strptime(ship_date, "%Y-%m-%d"))
 
             print("\nResults for Query 1:")
@@ -123,7 +173,7 @@ def start_program():
             part_type = input("Enter the type of the part: ")
             region_name = input("Enter the name of the region: ")
 
-            query2_results = query2(database["partsupp"],
+            query2_results = query2(session,
                                     int(part_size),
                                     str(part_type),
                                     str(region_name))
@@ -143,7 +193,7 @@ def start_program():
             while not is_valid_date(ship_date2):
                 ship_date2 = input("Invalid format! Please enter a valid shipment date (YYYY-MM-DD): ")
 
-            query3_results = query3(database["orders"],
+            query3_results = query3(session,
                                     str(market_segment),
                                     dt.datetime.strptime(order_date1, "%Y-%m-%d"),
                                     dt.datetime.strptime(ship_date2, "%Y-%m-%d"))
@@ -159,7 +209,7 @@ def start_program():
 
             region = input("Enter the region name: ")
 
-            query4_results = query4(database["orders"],
+            query4_results = query4(session,
                                     dt.datetime.strptime(order_date, "%Y-%m-%d"),
                                     region)
 
