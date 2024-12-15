@@ -303,10 +303,23 @@ def query2(session, size, type, i_region):
     return session.run(cypher_query, size=size, part_type=type, region=i_region)
 
 def query3(session, segment, date1, date2):
-    return 0
+    cypher_query = """
+    MATCH (c: Customer)-[:BELONGS_TO]->(o: Order)-[:BELONGS_TO]->(li: Lineitem) 
+    WHERE li.l_shipdate > $date2 and o.o_orderdate < $date1 and c.c_mktsegment = $segment 
+    RETURN o.o_orderkey AS l_orderkey, o.o_orderdate AS o_orderdate, o.o_shippriority AS o_shippriority, 
+            sum(li.l_extendedprice * (1 - li.l_discount)) AS revenue 
+    ORDER BY revenue DESC, o.o_orderdate
+    """
+    return session.run(cypher_query, segment=segment, date1=date1, date2=date2)
 
-def query4(session, date, region):
-    return 0
+def query4(session, date1, date2, region):
+    cypher_query = """
+    MATCH (c: Customer)-[:BELONGS_TO]->(o: Order)-[:BELONGS_TO]->(li: Lineitem)-[:BELONGS_TO]->(ps: PartSupp)-[:BELONGS_TO]->(s: Supplier)-[:BELONGS_TO]->(n: Nation)-[:BELONGS_TO]->(r: Region) 
+    WHERE o.o_orderdate >= $date1 and o.o_orderdate < $date2 and r.r_name = $region 
+    RETURN n.n_name AS n_name, sum(li.l_extendedprice * (1 - li.l_discount)) AS revenue 
+    ORDER BY revenue DESC
+    """
+    return session.run(cypher_query, date1=date1, date2=date2, region=region)
 
 def is_valid_date(date_str):
     """
@@ -397,8 +410,12 @@ def start_program():
 
             region_name = input("Enter the region name: ")
 
+            date1 = dt.datetime.strptime(order_date, "%Y-%m-%d")
+            date2 = date1.replace(date1.year + 1)
+
             query4_results = query4(session,
-                                    dt.datetime.strptime(order_date, "%Y-%m-%d"),
+                                    date1,
+                                    date2,
                                     region_name)
 
             print("\nResults for Query 4:")
