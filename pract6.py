@@ -4,10 +4,10 @@ import random
 
 name = ["Ignasi", "Victor", "Lamine Yamal", "Gerard", "Marc", "Fermin Lopez", "Pau Cubarsi", "Raphinha", "Robert Lewandowski", "Gavi"]
 address = ["Barcelona", "Tremp", "Tarrega", "Badalona", "Girona", "Tarragona", "Santa Coloma", "Sort", "Wisconsin", "Lleida"]
-nation = ["Catalunya", "Paisos Catalans", "Republica Catalana", "Unio de Republiques Socialistes Catalanes", "Corona Aragonesa", "EEUU", "UAE", "Euskadi", "Wisconsin", "Andalusia"]
-flag = ['A', 'C', 'A', 'B', 'C', 'B', 'A', 'B', 'C', 'C']
+flag = ['A', 'B', 'C']
 price = [4505, 32243, 12512, 34800, 21657, 54347, 97562, 31252, 26347, 11463601]
-region = ["Barcelona", "Girona", "Tarragona", "Lleida", "Catalunya Nord", "Valencia", "Madrid", "Saragossa", "Wisconsin", "Utah"]
+nation = ["Catalunya", "Paisos Catalans", "Republica Catalana"]
+region = ["Barcelona", "Girona", "Tarragona"]
 brand = ["Mango", "CaixaBank", "Naturgy", "Glovo", "EstrellaDamm", "Moritz", "HM", "Deliveroo", "BBVA", "Iberdrola"]
 
 def create_database(session):
@@ -17,21 +17,22 @@ def create_database(session):
     create_supp_nodes(session)
     create_partsupp_nodes(session)
     create_nation_nodes(session)
+    create_region_nodes(session)
     create_order_nodes(session)
     create_customer_nodes(session)
     create_lineitem_nodes(session)
     create_relations(session)
 
 def create_part_nodes(session):
-    for i in 10: 
-        session.run("CREATE (part" + i + ": Part{p_partkey: " + i + ", p_name: 'Partkey" + i + "'"
-        ", p_mfgr: 'AEIOU', p_brand '" + brand[i] + "', p_type: 'Cotxe'" + 
-        ", p_size: " + str(random.randint(1,5)) + ", p_container: 'Box" + i + "'"
+    for i in range(0, 10):
+        session.run("CREATE (part" + str(i) + ": Part{p_partkey: " + str(i) + ", p_name: 'Partkey" + str(i) + "'"
+        ", p_mfgr: 'AEIOU', p_brand: '" + brand[i] + "', p_type: '" + flag[random.randint(0,2)] + "'" 
+        ", p_size: " + str(random.randint(1,2)) + ", p_container: 'Box" + str(i) + "'"
         ", p_retailprice: " + str(float(random.randint(1200, 4500) / 100)) + 
         ", p_comment: 'Todo mal'})")
 
 def create_supp_nodes(session):
-    for i in 10:
+    for i in range(0, 10):
         session.run("CREATE (supp" + str(i) + ": Supplier {s_suppkey: " + str(i) + 
             ", s_name: 'Suppkey" + str(i) + "', " +
             "s_address: '" + address[i] + "', " +
@@ -41,55 +42,62 @@ def create_supp_nodes(session):
 
 
 def create_partsupp_nodes(session):
-    for i in 10:
-        session.run("CREATE (partsupp" + i + ": PartSupp{ps_partkey: " + i + ", ps_suppkey: " + i +
+    for i in range(0, 10):
+        session.run("CREATE (partsupp" + str(i) + ": PartSupp{ps_partkey: " + str(i) + ", ps_suppkey: " + str(i) +
                     ", ps_availqty: " + str(random.randint(150, 460)) +
                     ", ps_supplycost: " + str(float(random.randint(250, 750) / 100)) + ", ps_comment: 'Seguimos mal'})")
 
-    session.run("CREATE INDEX ON: PartSupp(ps_supplycost)")
+    existing_indexes = session.run("SHOW INDEXES;")
+    index_exists = any("ps_supplycost" in record["name"] for record in existing_indexes)
+
+    if not index_exists:
+        session.run("CREATE INDEX ps_supplycost_index FOR (n:PartSupp) ON (n.ps_supplycost)")
+    else:
+        print("Index for ps_supplycost already exists. Skipping creation.")
 
 def create_nation_nodes(session):
-    for i in 10:
-          session.run("CREATE (nation" + i + ": Nation{n_nationkey: " + i + ", n_name: '" + nation[i] + "'"
+    for i in range(0, 3):
+          session.run("CREATE (nation" + str(i) + ": Nation{n_nationkey: " + str(i) + ", n_name: '" + nation[i] + "'"
                     ", n_comment: 'Seguimos bien'})") 
 
 def create_region_nodes(session):
-    for i in 10:
-        session.run("CREATE (region" + i + ": Region{r_regionkey: " + i + ", r_name: '" + region[i] + "'"
+    for i in range(0, 3):
+        session.run("CREATE (region" + str(i) + ": Region{r_regionkey: " + str(i) + ", r_name: '" + region[i] + "'"
                     ", r_comment: 'De mal en peor'})")
 
 def create_order_nodes(session):
-    for i in 10:
-        session.run("CREATE (order" + i + ": Order{o_orderkey: " + i + ", o_orderstatus: 'Z" + "'"
-                    ", o_totalprice: " + price[i] + ", o_orderdate: '" + dt.datetime(2024, 5, i) +
-                    "', o_orderpriority: 'H" + 
+    for i in range(0, 10):
+        session.run("CREATE (order" + str(i) + ": Order{o_orderkey: " + str(i) + ", o_orderstatus: 'Z" + "'"
+                    f", o_totalprice: {price[i]}, o_orderdate: '{dt.datetime(2024, 5, i+1)}', o_orderpriority: 'H" + 
                     "', o_clerk: '" + "Oscar" +
                     "', o_shippriority: '" + str(random.randint(1, 20)) +
                     "', o_comment: 'Lookin good'})")
 
 def create_customer_nodes(session):
-    for i in 10:
-        session.run("CREATE (customer" + i + ": Customer{c_custkey: " + i + ", c_name: '" + name[i] +
+    for i in range(0, 10):
+        session.run("CREATE (customer" + str(i) + ": Customer{c_custkey: " + str(i) + ", c_name: '" + name[i] +
                     "', c_address: '" + address[i] + "', c_phone: " + str(random.randint(600000000, 699999999)) +
                     ", c_acctbal: " + str(random.random()) +
                     ", c_mktsegment: 'Automobile', s_comment: 'Todo bien'})")
 
 def create_lineitem_nodes(session):
-    for i in 10:
-        session.run("CREATE (lineitem" + i + ": Lineitem{l_linenumber: " + i + ", l_quantity: " + str(random.randint(15, 50)) +
-                    ", l_extendedprice: " + price[i] + ", l_discount: " + str(random.randint(0,100) / 100) +
+    for i in range(0, 10):
+        session.run("CREATE (lineitem" + str(i) + ": Lineitem{l_linenumber: " + str(i) + ", l_quantity: " + str(random.randint(15, 50)) +
+                    f", l_extendedprice: {price[i]}, l_discount: " + str(random.randint(0,100) / 100) +
                     ", l_tax: " + str(0.21) +
-                    ", l_returnflag: '" + flag[i] +
-                    "', l_linestatus: '" + flag[i] +
-                    "', l_shipdate: '" + str(dt.datetime(2024, 5, i+1)) +
+                    ", l_returnflag: '" + flag[random.randint(0,2)] +
+                    "', l_linestatus: '" + flag[random.randint(0,2)] +
+                    "', l_shipdate: '" + str(dt.datetime(random.randint(2000,2024), random.randint(1,12), i+1).date()) +
                     "', l_commitdate: '" + str(dt.datetime(2024, 5, i+2)) +
                     "', l_receiptdate: '" + str(dt.datetime(2024, 5, i+3)) +
                     "', l_shipinstruct: 'Fast af boi" + 
-                    "', l_shipmode: '" + flag[i] + 
+                    "', l_shipmode: '" + flag[random.randint(0,2)] + 
                     "', l_comment: 'Las cosas no van tan mal por aqui'})")
 
 def create_relations(session):
     # PART TO PARTSUPP
+    session.run("MATCH (part0: Part{p_partkey: 0}), (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 0}) "
+                "CREATE (part0) -[:BELONGS_TO]-> (partsupp0)")
     session.run("MATCH (part1: Part{p_partkey: 1}), (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 1}) "
                 "CREATE (part1) -[:BELONGS_TO]-> (partsupp1)")
     session.run("MATCH (part2: Part{p_partkey: 2}), (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 2}) "
@@ -108,14 +116,191 @@ def create_relations(session):
                 "CREATE (part8) -[:BELONGS_TO]-> (partsupp8)")
     session.run("MATCH (part9: Part{p_partkey: 9}), (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 9}) "
                 "CREATE (part9) -[:BELONGS_TO]-> (partsupp9)")
-    session.run("MATCH (part10: Part{p_partkey: 10}), (partsupp5: PartSupp{ps_suppkey: 10, ps_partkey: 10}) "
-                "CREATE (part10) -[:BELONGS_TO]-> (partsupp10)")
+
+    # PARTSUPP --> SUPPLIER
+    session.run("MATCH (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 0}), (supp0: Supplier{s_suppkey: 0}) "
+                "CREATE (partsupp0) -[:BELONGS_TO]-> (supp0)")
+    session.run("MATCH (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 1}), (supp1: Supplier{s_suppkey: 1}) "
+                "CREATE (partsupp1) -[:BELONGS_TO]-> (supp1)")
+    session.run("MATCH (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 2}), (supp2: Supplier{s_suppkey: 2}) "
+                "CREATE (partsupp2) -[:BELONGS_TO]-> (supp2)")
+    session.run("MATCH (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 3}), (supp3: Supplier{s_suppkey: 3}) "
+                "CREATE (partsupp3) -[:BELONGS_TO]-> (supp3)")
+    session.run("MATCH (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 4}), (supp4: Supplier{s_suppkey: 4}) "
+                "CREATE (partsupp4) -[:BELONGS_TO]-> (supp4)")
+    session.run("MATCH (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 5}), (supp5: Supplier{s_suppkey: 5}) "
+                "CREATE (partsupp5) -[:BELONGS_TO]-> (supp5)")
+    session.run("MATCH (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 6}), (supp6: Supplier{s_suppkey: 6}) "
+                "CREATE (partsupp6) -[:BELONGS_TO]-> (supp6)")
+    session.run("MATCH (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 7}), (supp5: Supplier{s_suppkey: 5}) "
+                "CREATE (partsupp7) -[:BELONGS_TO]-> (supp7)")
+    session.run("MATCH (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 8}), (supp5: Supplier{s_suppkey: 5}) "
+                "CREATE (partsupp8) -[:BELONGS_TO]-> (supp8)")
+    session.run("MATCH (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 9}), (supp5: Supplier{s_suppkey: 5}) "
+                "CREATE (partsupp9) -[:BELONGS_TO]-> (supp9)")
+
+    # SUPPLIER --> NATION
+    session.run("MATCH (supp0: Supplier{s_suppkey: 0}), (nation0: Nation{n_nationkey: 0}) "
+                "CREATE (supp0) -[:BELONGS_TO]-> (nation0)")
+    session.run("MATCH (supp1: Supplier{s_suppkey: 1}), (nation1: Nation{n_nationkey: 1}) "
+                "CREATE (supp1) -[:BELONGS_TO]-> (nation1)")
+    session.run("MATCH (supp2: Supplier{s_suppkey: 2}), (nation2: Nation{n_nationkey: 2}) "
+                "CREATE (supp2) -[:BELONGS_TO]-> (nation2)")
+    session.run("MATCH (supp3: Supplier{s_suppkey: 3}), (nation0: Nation{n_nationkey: 0}) "
+                "CREATE (supp3) -[:BELONGS_TO]-> (nation0)")
+    session.run("MATCH (supp4: Supplier{s_suppkey: 4}), (nation1: Nation{n_nationkey: 1}) "
+                "CREATE (supp4) -[:BELONGS_TO]-> (nation1)")
+    session.run("MATCH (supp5: Supplier{s_suppkey: 5}), (nation2: Nation{n_nationkey: 2}) "
+                "CREATE (supp5) -[:BELONGS_TO]-> (nation2)")
+    session.run("MATCH (supp6: Supplier{s_suppkey: 6}), (nation1: Nation{n_nationkey: 1}) "
+                "CREATE (supp6) -[:BELONGS_TO]-> (nation1)")
+    session.run("MATCH (supp7: Supplier{s_suppkey: 7}), (nation0: Nation{n_nationkey: 0}) "
+                "CREATE (supp7) -[:BELONGS_TO]-> (nation0)")
+    session.run("MATCH (supp8: Supplier{s_suppkey: 8}), (nation1: Nation{n_nationkey: 1}) "
+                "CREATE (supp8) -[:BELONGS_TO]-> (nation1)")
+    session.run("MATCH (supp9: Supplier{s_suppkey: 9}), (nation2: Nation{n_nationkey: 2}) "
+                "CREATE (supp9) -[:BELONGS_TO]-> (nation2)")
+
+    # NATION --> REGION
+    session.run("MATCH (nation0: Nation{n_nationkey: 0}), (region0: Region{r_regionkey: 0}) "
+                "CREATE (nation0) -[:BELONGS_TO]-> (region0)")
+    session.run("MATCH (nation1: Nation{n_nationkey: 1}), (region1: Region{r_regionkey: 1}) "
+                "CREATE (nation1) -[:BELONGS_TO]-> (region1)")
+    session.run("MATCH (nation2: Nation{n_nationkey: 2}), (region2: Region{r_regionkey: 2}) "
+                "CREATE (nation2) -[:BELONGS_TO]-> (region2)")
+
+    # CUSTOMER --> NATION
+    session.run("MATCH (customer0: Customer{c_custkey: 0}), (nation0: Nation{n_nationkey: 0}) "
+                "CREATE (customer0) -[:BELONGS_TO]-> (nation0)")
+    session.run("MATCH (customer1: Customer{c_custkey: 1}), (nation1: Nation{n_nationkey: 1}) "
+                "CREATE (customer1) -[:BELONGS_TO]-> (nation1)")
+    session.run("MATCH (customer2: Customer{c_custkey: 2}), (nation2: Nation{n_nationkey: 2}) "
+                "CREATE (customer2) -[:BELONGS_TO]-> (nation2)")
+    session.run("MATCH (customer3: Customer{c_custkey: 3}), (nation0: Nation{n_nationkey: 0}) "
+                "CREATE (customer3) -[:BELONGS_TO]-> (nation0)")
+    session.run("MATCH (customer4: Customer{c_custkey: 4}), (nation1: Nation{n_nationkey: 1}) "
+                "CREATE (customer4) -[:BELONGS_TO]-> (nation1)")
+    session.run("MATCH (customer5: Customer{c_custkey: 5}), (nation2: Nation{n_nationkey: 2}) "
+                "CREATE (customer5) -[:BELONGS_TO]-> (nation2)")
+    session.run("MATCH (customer6: Customer{c_custkey: 6}), (nation0: Nation{n_nationkey: 0}) "
+                "CREATE (customer6) -[:BELONGS_TO]-> (nation0)")
+    session.run("MATCH (customer7: Customer{c_custkey: 7}), (nation1: Nation{n_nationkey: 1}) "
+                "CREATE (customer7) -[:BELONGS_TO]-> (nation1)")
+    session.run("MATCH (customer8: Customer{c_custkey: 8}), (nation2: Nation{n_nationkey: 2}) "
+                "CREATE (customer8) -[:BELONGS_TO]-> (nation2)")
+    session.run("MATCH (customer9: Customer{c_custkey: 9}), (nation1: Nation{n_nationkey: 1}) "
+                "CREATE (customer9) -[:BELONGS_TO]-> (nation1)")
+
+    # CUSTOMER --> ORDER
+    session.run("MATCH (customer0: Customer{c_custkey: 0}), (order0: Order{o_orderkey: 0}) "
+                "CREATE (customer0) -[:BELONGS_TO]-> (order0)")
+    session.run("MATCH (customer1: Customer{c_custkey: 1}), (order1: Order{o_orderkey: 1}) "
+                "CREATE (customer1) -[:BELONGS_TO]-> (order1)")
+    session.run("MATCH (customer2: Customer{c_custkey: 2}), (order2: Order{o_orderkey: 2}) "
+                "CREATE (customer2) -[:BELONGS_TO]-> (order2)")
+    session.run("MATCH (customer3: Customer{c_custkey: 3}), (order3: Order{o_orderkey: 3}) "
+                "CREATE (customer3) -[:BELONGS_TO]-> (order3)")
+    session.run("MATCH (customer4: Customer{c_custkey: 4}), (order4: Order{o_orderkey: 4}) "
+                "CREATE (customer4) -[:BELONGS_TO]-> (order4)")
+    session.run("MATCH (customer5: Customer{c_custkey: 5}), (order5: Order{o_orderkey: 5}) "
+                "CREATE (customer5) -[:BELONGS_TO]-> (order5)")
+    session.run("MATCH (customer6: Customer{c_custkey: 6}), (order6: Order{o_orderkey: 6}) "
+                "CREATE (customer6) -[:BELONGS_TO]-> (order6)")
+    session.run("MATCH (customer7: Customer{c_custkey: 7}), (order7: Order{o_orderkey: 7}) "
+                "CREATE (customer7) -[:BELONGS_TO]-> (order7)")
+    session.run("MATCH (customer8: Customer{c_custkey: 8}), (order8: Order{o_orderkey: 8}) "
+                "CREATE (customer8) -[:BELONGS_TO]-> (order8)")
+    session.run("MATCH (customer9: Customer{c_custkey: 9}), (order9: Order{o_orderkey: 9}) "
+                "CREATE (customer9) -[:BELONGS_TO]-> (order9)")
+
+    # ORDER --> LINEITEM
+    session.run("MATCH (order0: Order{o_orderkey: 0}), (lineitem0: Lineitem{l_linenumber: 0}) "
+                "CREATE (order0) -[:BELONGS_TO]-> (lineitem0)")
+    session.run("MATCH (order1: Order{o_orderkey: 1}), (lineitem1: Lineitem{l_linenumber: 1}) "
+                "CREATE (order1) -[:BELONGS_TO]-> (lineitem1)")
+    session.run("MATCH (order2: Order{o_orderkey: 2}), (lineitem2: Lineitem{l_linenumber: 2}) "
+                "CREATE (order2) -[:BELONGS_TO]-> (lineitem2)")
+    session.run("MATCH (order3: Order{o_orderkey: 3}), (lineitem3: Lineitem{l_linenumber: 3}) "
+                "CREATE (order3) -[:BELONGS_TO]-> (lineitem3)")
+    session.run("MATCH (order4: Order{o_orderkey: 4}), (lineitem4: Lineitem{l_linenumber: 4}) "
+                "CREATE (order4) -[:BELONGS_TO]-> (lineitem4)")
+    session.run("MATCH (order5: Order{o_orderkey: 5}), (lineitem5: Lineitem{l_linenumber: 5}) "
+                "CREATE (order5) -[:BELONGS_TO]-> (lineitem5)")
+    session.run("MATCH (order6: Order{o_orderkey: 6}), (lineitem6: Lineitem{l_linenumber: 6}) "
+                "CREATE (order6) -[:BELONGS_TO]-> (lineitem6)")
+    session.run("MATCH (order7: Order{o_orderkey: 7}), (lineitem7: Lineitem{l_linenumber: 7}) "
+                "CREATE (order7) -[:BELONGS_TO]-> (lineitem7)")
+    session.run("MATCH (order8: Order{o_orderkey: 8}), (lineitem8: Lineitem{l_linenumber: 8}) "
+                "CREATE (order8) -[:BELONGS_TO]-> (lineitem8)")
+    session.run("MATCH (order9: Order{o_orderkey: 9}), (lineitem9: Lineitem{l_linenumber: 9}) "
+                "CREATE (order9) -[:BELONGS_TO]-> (lineitem9)")
+
+    # LINEITEM --> PARTSUPP
+    session.run("MATCH (lineitem0: Lineitem{l_linenumber: 0}), (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 0}) "
+                "CREATE (lineitem0) -[:BELONGS_TO]-> (partsupp0)")
+    session.run("MATCH (lineitem1: Lineitem{l_linenumber: 1}), (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 1}) "
+                "CREATE (lineitem1) -[:BELONGS_TO]-> (partsupp1)")
+    session.run("MATCH (lineitem2: Lineitem{l_linenumber: 2}), (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 2}) "
+                "CREATE (lineitem2) -[:BELONGS_TO]-> (partsupp2)")
+    session.run("MATCH (lineitem3: Lineitem{l_linenumber: 3}), (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 3}) "
+                "CREATE (lineitem3) -[:BELONGS_TO]-> (partsupp3)")
+    session.run("MATCH (lineitem4: Lineitem{l_linenumber: 4}), (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 4}) "
+                "CREATE (lineitem4) -[:BELONGS_TO]-> (partsupp4)")
+    session.run("MATCH (lineitem5: Lineitem{l_linenumber: 5}), (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 5}) "
+                "CREATE (lineitem5) -[:BELONGS_TO]-> (partsupp5)")
+    session.run("MATCH (lineitem6: Lineitem{l_linenumber: 6}), (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 6}) "
+                "CREATE (lineitem6) -[:BELONGS_TO]-> (partsupp6)")
+    session.run("MATCH (lineitem7: Lineitem{l_linenumber: 7}), (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 7}) "
+                "CREATE (lineitem7) -[:BELONGS_TO]-> (partsupp7)")
+    session.run("MATCH (lineitem8: Lineitem{l_linenumber: 8}), (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 8}) "
+                "CREATE (lineitem8) -[:BELONGS_TO]-> (partsupp8)")
+    session.run("MATCH (lineitem9: Lineitem{l_linenumber: 9}), (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 9}) "
+                "CREATE (lineitem9) -[:BELONGS_TO]-> (partsupp9)")
+
+def print_all_nodes_and_relationships(session):
+    # print all nodes
+    print("Nodes in the database:")
+    nodes_result = session.run("MATCH (n) RETURN n")
+    for record in nodes_result:
+        print(record["n"])
+    
+    # print all relationships
+    # print("\nRelationships in the database:")
+    # relationships_result = session.run("MATCH ()-[r]->() RETURN r")
+    # for record in relationships_result:
+    #     print(record["r"])
 
 def query1(session, date):
-    return 0
+    cypher_query = """
+    MATCH (l:Lineitem)
+    WHERE date(l.l_shipdate) <= date($ship_date)
+    WITH l.l_returnflag AS l_returnflag, l.l_linestatus AS l_linestatus,
+         sum(l.l_quantity) AS sum_qty,
+         sum(l.l_extendedprice) AS sum_base_price,
+         sum(l.l_extendedprice * (1 - l.l_discount)) AS sum_disc_price,
+         sum(l.l_extendedprice * (1 - l.l_discount) * (1 + l.l_tax)) AS sum_charge,
+         avg(l.l_quantity) AS avg_qty,
+         avg(l.l_extendedprice) AS avg_price,
+         avg(l.l_discount) AS avg_disc,
+         count(l) AS count_order
+    RETURN l_returnflag, l_linestatus, sum_qty, sum_base_price, sum_disc_price,
+           sum_charge, avg_qty, avg_price, avg_disc, count_order
+    ORDER BY l_returnflag, l_linestatus
+    """
+    return session.run(cypher_query, ship_date=date)
 
-def query2(session, size, type, region):
-    return 0
+def query2(session, size, type, i_region):
+    cypher_query = """
+    MATCH (p:Part)-[:BELONGS_TO]->(ps:PartSupp)-[:BELONGS_TO]->(s:Supplier)-[:BELONGS_TO]->(n:Nation)-[:BELONGS_TO]->(r:Region)
+    WHERE p.p_size = $size AND p.p_type CONTAINS $part_type AND r.r_name = $region
+    WITH p, s, n, ps, r, min(ps.ps_supplycost) AS min_cost
+    WHERE ps.ps_supplycost = min_cost
+    RETURN s.s_acctbal AS s_acctbal, s.s_name AS s_name, n.n_name AS n_name, p.p_partkey AS p_partkey,
+           p.p_mfgr AS p_mfgr, s.s_address AS s_address, s.s_phone AS s_phone, s.s_comment AS s_comment
+    ORDER BY s.s_acctbal DESC, n.n_name, s.s_name, p.p_partkey
+    """
+    
+    return session.run(cypher_query, size=size, part_type=type, region=i_region)
 
 def query3(session, segment, date1, date2):
     return 0
@@ -137,29 +322,32 @@ def is_valid_date(date_str):
 
 def start_program():
     # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
-    driver = GraphDatabase.driver("bolt://localhost", auth=("neo4j", "Practica6"))
+    driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", ""))
     session = driver.session()
     create_database(session)
     
-    print("Please choose an operation:\n",
-          "1. Run the first query\n",
-          "2. Run the second query\n",
-          "3. Run the third query\n",
-          "4. Run the fourth query\n",
-          "0. Exit the program")
-
-    user_choice = input("Your selection: ")
-    user_choice = int(user_choice)
-
+    user_choice = -1
     while user_choice != 0:
+        print("Please choose an operation:\n",
+            "1. Run the first query [manual input]\n",
+            "2. Run the second query [manual input]\n",
+            "3. Run the third query [manual input]\n",
+            "4. Run the fourth query [manual input]\n",
+            "5. Run ALL querys with random DATA\n",
+            "6. Print all NODES in db\n",
+            "0. Exit the program")
+
+        user_choice = input("Your selection: ")
+        user_choice = int(user_choice)
 
         if user_choice == 1:
-            ship_date = input("Enter the shipment date in YYYY-MM-DD format: ")
+            print("Enter the shipment date in YYYY-MM-DD format: ")
+            ship_date = input()
             while not is_valid_date(ship_date):
                 ship_date = input("Invalid format! Please enter a valid shipment date (YYYY-MM-DD): ")
 
             query1_results = query1(session,
-                                    dt.datetime.strptime(ship_date, "%Y-%m-%d"))
+                                    dt.datetime.strptime(ship_date, "%Y-%m-%d").date())
 
             print("\nResults for Query 1:")
             for result in query1_results:
@@ -207,26 +395,41 @@ def start_program():
             while not is_valid_date(order_date):
                 order_date = input("Invalid format! Please enter a valid order date (YYYY-MM-DD): ")
 
-            region = input("Enter the region name: ")
+            region_name = input("Enter the region name: ")
 
             query4_results = query4(session,
                                     dt.datetime.strptime(order_date, "%Y-%m-%d"),
-                                    region)
+                                    region_name)
 
             print("\nResults for Query 4:")
             for result in query4_results:
                 print(result)
 
-        print("\nPlease choose an operation:\n",
-              "1. Run the first query\n",
-              "2. Run the second query\n",
-              "3. Run the third query\n",
-              "4. Run the fourth query\n",
-              "0. Exit the program")
+        elif user_choice == 5:
+            print("query_01:")
+            date_i = dt.datetime(random.randint(2000,2024), random.randint(1,12), random.randint(1,15)).date()
+            query1_results = query1(session, date=date_i)
+            print(f"results for Query 1: [using date: {date_i}]")
+            for result in query1_results:
+                print(result)
+            print()
+            
+            print("query_02:")
+            size_i = random.randint(1,2)
+            type_i = flag[random.randint(0,2)]
+            region_i = region[random.randint(0,2)]
+            query2_results = query2(session, size=size_i, type=type_i, i_region=region_i)
+            print(f"results for Query 2: [using: size: {size_i} || type: {type_i} || region: {region_i}]")
+            for result in query2_results:
+                print(result)
+            print()
 
-        user_choice = input("Your selection: ")
-        user_choice = int(user_choice)
+        elif user_choice == 6:
+            print_all_nodes_and_relationships(session)
+        
+        print()
 
+    print("bye bye")
 
 
 if __name__ == "__main__":
