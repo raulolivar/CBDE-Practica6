@@ -68,7 +68,7 @@ def create_region_nodes(session):
 def create_order_nodes(session):
     for i in range(0, 10):
         session.run("CREATE (order" + str(i) + ": Order{o_orderkey: " + str(i) + ", o_orderstatus: 'Z" + "'"
-                    f", o_totalprice: {price[i]}, o_orderdate: '{dt.datetime(2024, 5, i+1)}', o_orderpriority: 'H" + 
+                    f", o_totalprice: {price[i]}" + f", o_orderdate: '{dt.datetime(2015, 5, i+1).date()}', o_orderpriority: 'H" + 
                     "', o_clerk: '" + "Oscar" +
                     "', o_shippriority: '" + str(random.randint(1, 20)) +
                     "', o_comment: 'Lookin good'})")
@@ -78,7 +78,7 @@ def create_customer_nodes(session):
         session.run("CREATE (customer" + str(i) + ": Customer{c_custkey: " + str(i) + ", c_name: '" + name[i] +
                     "', c_address: '" + address[i] + "', c_phone: " + str(random.randint(600000000, 699999999)) +
                     ", c_acctbal: " + str(random.random()) +
-                    ", c_mktsegment: 'Automobile', s_comment: 'Todo bien'})")
+                    ", c_mktsegment: 'seg_x', s_comment: 'Todo bien'})")
 
 def create_lineitem_nodes(session):
     for i in range(0, 10):
@@ -87,7 +87,7 @@ def create_lineitem_nodes(session):
                     ", l_tax: " + str(0.21) +
                     ", l_returnflag: '" + flag[random.randint(0,2)] +
                     "', l_linestatus: '" + flag[random.randint(0,2)] +
-                    "', l_shipdate: '" + str(dt.datetime(random.randint(2000,2024), random.randint(1,12), i+1).date()) +
+                    "', l_shipdate: '" + str(dt.datetime(random.randint(2018,2021), random.randint(1,12), i+1).date()) +
                     "', l_commitdate: '" + str(dt.datetime(2024, 5, i+2)) +
                     "', l_receiptdate: '" + str(dt.datetime(2024, 5, i+3)) +
                     "', l_shipinstruct: 'Fast af boi" + 
@@ -424,7 +424,7 @@ def start_program():
 
         elif user_choice == 5:
             print("query_01:")
-            date_i = dt.datetime(random.randint(2000,2024), random.randint(1,12), random.randint(1,15)).date()
+            date_i = dt.datetime(random.randint(2020,2024), random.randint(1,12), random.randint(1,15)).date()
             query1_results = query1(session, date=date_i)
             print(f"results for Query 1: [using date: {date_i}]")
             for result in query1_results:
@@ -438,6 +438,26 @@ def start_program():
             query2_results = query2(session, size=size_i, type=type_i, i_region=region_i)
             print(f"results for Query 2: [using: size: {size_i} || type: {type_i} || region: {region_i}]")
             for result in query2_results:
+                print(result)
+            print()
+
+            print("query_03:")
+            date_i01 = dt.datetime(random.randint(2015,2024), random.randint(1,12), random.randint(1,15)).date()
+            date_i02 = dt.datetime(random.randint(2000,2004), random.randint(1,12), random.randint(1,15)).date()
+            seg_i = 'seg_x'
+            query3_results = query3(session, date1=date_i01, date2=date_i02, segment=seg_i)
+            print(f"results for Query 3: [using: date_01: {date_i01} || date_02: {date_i02} || segmenet: {seg_i}]")
+            for result in query3_results:
+                print(result)
+            print()
+
+            print("query_04:")
+            date_i01 = dt.datetime(random.randint(2000,2014), random.randint(1,12), random.randint(1,15)).date()
+            date_i02 = dt.datetime(random.randint(2015,2024), random.randint(1,12), random.randint(1,15)).date()
+            region_i = region[random.randint(0,2)]
+            query4_results = query4(session, date1=date_i01, date2=date_i02, region=region_i)
+            print(f"results for Query 4: [using: date_01: {date_i01} || date_02: {date_i02} || region: {region_i}]")
+            for result in query4_results:
                 print(result)
             print()
 
