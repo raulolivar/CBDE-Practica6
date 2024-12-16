@@ -43,7 +43,7 @@ def create_supp_nodes(session):
 
 def create_partsupp_nodes(session):
     for i in range(0, 10):
-        session.run("CREATE (partsupp" + str(i) + ": PartSupp{ps_partkey: " + str(i) + ", ps_suppkey: " + str(i) +
+        session.run("CREATE (partsupp" + str(i) + ": PartSupp{ps_partkey: 'partSupp" + str(i) + "', ps_suppkey: " + str(i) +
                     ", ps_availqty: " + str(random.randint(150, 460)) +
                     ", ps_supplycost: " + str(float(random.randint(250, 750) / 100)) + ", ps_comment: 'Seguimos mal'})")
 
@@ -67,7 +67,7 @@ def create_region_nodes(session):
 
 def create_order_nodes(session):
     for i in range(0, 10):
-        session.run("CREATE (order" + str(i) + ": Order{o_orderkey: " + str(i) + ", o_orderstatus: 'Z" + "'"
+        session.run("CREATE (order" + str(i) + ": Order{o_orderkey: 'order" + str(i) + "', o_orderstatus: 'Z" + "'"
                     f", o_totalprice: {price[i]}" + f", o_orderdate: '{dt.datetime(2015, 5, i+1).date()}', o_orderpriority: 'H" + 
                     "', o_clerk: '" + "Oscar" +
                     "', o_shippriority: '" + str(random.randint(1, 20)) +
@@ -88,55 +88,55 @@ def create_lineitem_nodes(session):
                     ", l_returnflag: '" + flag[random.randint(0,2)] +
                     "', l_linestatus: '" + flag[random.randint(0,2)] +
                     "', l_shipdate: '" + str(dt.datetime(random.randint(2018,2021), random.randint(1,12), i+1).date()) +
-                    "', l_commitdate: '" + str(dt.datetime(2024, 5, i+2)) +
-                    "', l_receiptdate: '" + str(dt.datetime(2024, 5, i+3)) +
+                    "', l_commitdate: '" + str(dt.datetime(2024, 5, i+2).date()) +
+                    "', l_receiptdate: '" + str(dt.datetime(2024, 7, i+3).date()) +
                     "', l_shipinstruct: 'Fast af boi" + 
                     "', l_shipmode: '" + flag[random.randint(0,2)] + 
                     "', l_comment: 'Las cosas no van tan mal por aqui'})")
 
 def create_relations(session):
     # PART TO PARTSUPP
-    session.run("MATCH (part0: Part{p_partkey: 0}), (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 0}) "
+    session.run("MATCH (part0: Part{p_partkey: 0}), (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 'partSupp0'}) "
                 "CREATE (part0) -[:BELONGS_TO]-> (partsupp0)")
-    session.run("MATCH (part1: Part{p_partkey: 1}), (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 1}) "
+    session.run("MATCH (part1: Part{p_partkey: 1}), (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 'partSupp1'}) "
                 "CREATE (part1) -[:BELONGS_TO]-> (partsupp1)")
-    session.run("MATCH (part2: Part{p_partkey: 2}), (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 2}) "
+    session.run("MATCH (part2: Part{p_partkey: 2}), (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 'partSupp2'}) "
                 "CREATE (part2) -[:BELONGS_TO]-> (partsupp2)")
-    session.run("MATCH (part3: Part{p_partkey: 3}), (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 3}) "
+    session.run("MATCH (part3: Part{p_partkey: 3}), (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 'partSupp3'}) "
                 "CREATE (part3) -[:BELONGS_TO]-> (partsupp3)")
-    session.run("MATCH (part4: Part{p_partkey: 4}), (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 4}) "
+    session.run("MATCH (part4: Part{p_partkey: 4}), (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 'partSupp4'}) "
                 "CREATE (part4) -[:BELONGS_TO]-> (partsupp4)")
-    session.run("MATCH (part5: Part{p_partkey: 5}), (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 5}) "
+    session.run("MATCH (part5: Part{p_partkey: 5}), (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 'partSupp5'}) "
                 "CREATE (part5) -[:BELONGS_TO]-> (partsupp5)")
-    session.run("MATCH (part6: Part{p_partkey: 6}), (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 6}) "
+    session.run("MATCH (part6: Part{p_partkey: 6}), (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 'partSupp6'}) "
                 "CREATE (part6) -[:BELONGS_TO]-> (partsupp6)")
-    session.run("MATCH (part7: Part{p_partkey: 7}), (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 7}) "
+    session.run("MATCH (part7: Part{p_partkey: 7}), (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 'partSupp7'}) "
                 "CREATE (part7) -[:BELONGS_TO]-> (partsupp7)")
-    session.run("MATCH (part8: Part{p_partkey: 8}), (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 8}) "
+    session.run("MATCH (part8: Part{p_partkey: 8}), (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 'partSupp8'}) "
                 "CREATE (part8) -[:BELONGS_TO]-> (partsupp8)")
-    session.run("MATCH (part9: Part{p_partkey: 9}), (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 9}) "
+    session.run("MATCH (part9: Part{p_partkey: 9}), (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 'partSupp9'}) "
                 "CREATE (part9) -[:BELONGS_TO]-> (partsupp9)")
 
     # PARTSUPP --> SUPPLIER
-    session.run("MATCH (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 0}), (supp0: Supplier{s_suppkey: 0}) "
+    session.run("MATCH (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 'partSupp0'}), (supp0: Supplier{s_suppkey: 0}) "
                 "CREATE (partsupp0) -[:BELONGS_TO]-> (supp0)")
-    session.run("MATCH (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 1}), (supp1: Supplier{s_suppkey: 1}) "
+    session.run("MATCH (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 'partSupp1'}), (supp1: Supplier{s_suppkey: 1}) "
                 "CREATE (partsupp1) -[:BELONGS_TO]-> (supp1)")
-    session.run("MATCH (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 2}), (supp2: Supplier{s_suppkey: 2}) "
+    session.run("MATCH (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 'partSupp2'}), (supp2: Supplier{s_suppkey: 2}) "
                 "CREATE (partsupp2) -[:BELONGS_TO]-> (supp2)")
-    session.run("MATCH (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 3}), (supp3: Supplier{s_suppkey: 3}) "
+    session.run("MATCH (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 'partSupp3'}), (supp3: Supplier{s_suppkey: 3}) "
                 "CREATE (partsupp3) -[:BELONGS_TO]-> (supp3)")
-    session.run("MATCH (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 4}), (supp4: Supplier{s_suppkey: 4}) "
+    session.run("MATCH (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 'partSupp4'}), (supp4: Supplier{s_suppkey: 4}) "
                 "CREATE (partsupp4) -[:BELONGS_TO]-> (supp4)")
-    session.run("MATCH (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 5}), (supp5: Supplier{s_suppkey: 5}) "
+    session.run("MATCH (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 'partSupp5'}), (supp5: Supplier{s_suppkey: 5}) "
                 "CREATE (partsupp5) -[:BELONGS_TO]-> (supp5)")
-    session.run("MATCH (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 6}), (supp6: Supplier{s_suppkey: 6}) "
+    session.run("MATCH (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 'partSupp6'}), (supp6: Supplier{s_suppkey: 6}) "
                 "CREATE (partsupp6) -[:BELONGS_TO]-> (supp6)")
-    session.run("MATCH (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 7}), (supp5: Supplier{s_suppkey: 5}) "
+    session.run("MATCH (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 'partSupp7'}), (supp5: Supplier{s_suppkey: 5}) "
                 "CREATE (partsupp7) -[:BELONGS_TO]-> (supp7)")
-    session.run("MATCH (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 8}), (supp5: Supplier{s_suppkey: 5}) "
+    session.run("MATCH (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 'partSupp8'}), (supp5: Supplier{s_suppkey: 5}) "
                 "CREATE (partsupp8) -[:BELONGS_TO]-> (supp8)")
-    session.run("MATCH (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 9}), (supp5: Supplier{s_suppkey: 5}) "
+    session.run("MATCH (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 'partSupp9'}), (supp5: Supplier{s_suppkey: 5}) "
                 "CREATE (partsupp9) -[:BELONGS_TO]-> (supp9)")
 
     # SUPPLIER --> NATION
@@ -192,69 +192,69 @@ def create_relations(session):
                 "CREATE (customer9) -[:BELONGS_TO]-> (nation1)")
 
     # CUSTOMER --> ORDER
-    session.run("MATCH (customer0: Customer{c_custkey: 0}), (order0: Order{o_orderkey: 0}) "
+    session.run("MATCH (customer0: Customer{c_custkey: 0}), (order0: Order{o_orderkey: 'order0'}) "
                 "CREATE (customer0) -[:BELONGS_TO]-> (order0)")
-    session.run("MATCH (customer1: Customer{c_custkey: 1}), (order1: Order{o_orderkey: 1}) "
+    session.run("MATCH (customer1: Customer{c_custkey: 1}), (order1: Order{o_orderkey: 'order1'}) "
                 "CREATE (customer1) -[:BELONGS_TO]-> (order1)")
-    session.run("MATCH (customer2: Customer{c_custkey: 2}), (order2: Order{o_orderkey: 2}) "
+    session.run("MATCH (customer2: Customer{c_custkey: 2}), (order2: Order{o_orderkey: 'order2'}) "
                 "CREATE (customer2) -[:BELONGS_TO]-> (order2)")
-    session.run("MATCH (customer3: Customer{c_custkey: 3}), (order3: Order{o_orderkey: 3}) "
+    session.run("MATCH (customer3: Customer{c_custkey: 3}), (order3: Order{o_orderkey: 'order3'}) "
                 "CREATE (customer3) -[:BELONGS_TO]-> (order3)")
-    session.run("MATCH (customer4: Customer{c_custkey: 4}), (order4: Order{o_orderkey: 4}) "
+    session.run("MATCH (customer4: Customer{c_custkey: 4}), (order4: Order{o_orderkey: 'order4'}) "
                 "CREATE (customer4) -[:BELONGS_TO]-> (order4)")
-    session.run("MATCH (customer5: Customer{c_custkey: 5}), (order5: Order{o_orderkey: 5}) "
+    session.run("MATCH (customer5: Customer{c_custkey: 5}), (order5: Order{o_orderkey: 'order5'}) "
                 "CREATE (customer5) -[:BELONGS_TO]-> (order5)")
-    session.run("MATCH (customer6: Customer{c_custkey: 6}), (order6: Order{o_orderkey: 6}) "
+    session.run("MATCH (customer6: Customer{c_custkey: 6}), (order6: Order{o_orderkey: 'order6'}) "
                 "CREATE (customer6) -[:BELONGS_TO]-> (order6)")
-    session.run("MATCH (customer7: Customer{c_custkey: 7}), (order7: Order{o_orderkey: 7}) "
+    session.run("MATCH (customer7: Customer{c_custkey: 7}), (order7: Order{o_orderkey: 'order7'}) "
                 "CREATE (customer7) -[:BELONGS_TO]-> (order7)")
-    session.run("MATCH (customer8: Customer{c_custkey: 8}), (order8: Order{o_orderkey: 8}) "
+    session.run("MATCH (customer8: Customer{c_custkey: 8}), (order8: Order{o_orderkey: 'order8'}) "
                 "CREATE (customer8) -[:BELONGS_TO]-> (order8)")
-    session.run("MATCH (customer9: Customer{c_custkey: 9}), (order9: Order{o_orderkey: 9}) "
+    session.run("MATCH (customer9: Customer{c_custkey: 9}), (order9: Order{o_orderkey: 'order9'}) "
                 "CREATE (customer9) -[:BELONGS_TO]-> (order9)")
 
     # ORDER --> LINEITEM
-    session.run("MATCH (order0: Order{o_orderkey: 0}), (lineitem0: Lineitem{l_linenumber: 0}) "
+    session.run("MATCH (order0: Order{o_orderkey: 'order0'}), (lineitem0: Lineitem{l_linenumber: 0}) "
                 "CREATE (order0) -[:BELONGS_TO]-> (lineitem0)")
-    session.run("MATCH (order1: Order{o_orderkey: 1}), (lineitem1: Lineitem{l_linenumber: 1}) "
+    session.run("MATCH (order1: Order{o_orderkey: 'order1'}), (lineitem1: Lineitem{l_linenumber: 1}) "
                 "CREATE (order1) -[:BELONGS_TO]-> (lineitem1)")
-    session.run("MATCH (order2: Order{o_orderkey: 2}), (lineitem2: Lineitem{l_linenumber: 2}) "
+    session.run("MATCH (order2: Order{o_orderkey: 'order2'}), (lineitem2: Lineitem{l_linenumber: 2}) "
                 "CREATE (order2) -[:BELONGS_TO]-> (lineitem2)")
-    session.run("MATCH (order3: Order{o_orderkey: 3}), (lineitem3: Lineitem{l_linenumber: 3}) "
+    session.run("MATCH (order3: Order{o_orderkey: 'order3'}), (lineitem3: Lineitem{l_linenumber: 3}) "
                 "CREATE (order3) -[:BELONGS_TO]-> (lineitem3)")
-    session.run("MATCH (order4: Order{o_orderkey: 4}), (lineitem4: Lineitem{l_linenumber: 4}) "
+    session.run("MATCH (order4: Order{o_orderkey: 'order4'}), (lineitem4: Lineitem{l_linenumber: 4}) "
                 "CREATE (order4) -[:BELONGS_TO]-> (lineitem4)")
-    session.run("MATCH (order5: Order{o_orderkey: 5}), (lineitem5: Lineitem{l_linenumber: 5}) "
+    session.run("MATCH (order5: Order{o_orderkey: 'order5'}), (lineitem5: Lineitem{l_linenumber: 5}) "
                 "CREATE (order5) -[:BELONGS_TO]-> (lineitem5)")
-    session.run("MATCH (order6: Order{o_orderkey: 6}), (lineitem6: Lineitem{l_linenumber: 6}) "
+    session.run("MATCH (order6: Order{o_orderkey: 'order6'}), (lineitem6: Lineitem{l_linenumber: 6}) "
                 "CREATE (order6) -[:BELONGS_TO]-> (lineitem6)")
-    session.run("MATCH (order7: Order{o_orderkey: 7}), (lineitem7: Lineitem{l_linenumber: 7}) "
+    session.run("MATCH (order7: Order{o_orderkey: 'order7'}), (lineitem7: Lineitem{l_linenumber: 7}) "
                 "CREATE (order7) -[:BELONGS_TO]-> (lineitem7)")
-    session.run("MATCH (order8: Order{o_orderkey: 8}), (lineitem8: Lineitem{l_linenumber: 8}) "
+    session.run("MATCH (order8: Order{o_orderkey: 'order8'}), (lineitem8: Lineitem{l_linenumber: 8}) "
                 "CREATE (order8) -[:BELONGS_TO]-> (lineitem8)")
-    session.run("MATCH (order9: Order{o_orderkey: 9}), (lineitem9: Lineitem{l_linenumber: 9}) "
+    session.run("MATCH (order9: Order{o_orderkey: 'order9'}), (lineitem9: Lineitem{l_linenumber: 9}) "
                 "CREATE (order9) -[:BELONGS_TO]-> (lineitem9)")
 
     # LINEITEM --> PARTSUPP
-    session.run("MATCH (lineitem0: Lineitem{l_linenumber: 0}), (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 0}) "
+    session.run("MATCH (lineitem0: Lineitem{l_linenumber: 0}), (partsupp0: PartSupp{ps_suppkey: 0, ps_partkey: 'partSupp0'}) "
                 "CREATE (lineitem0) -[:BELONGS_TO]-> (partsupp0)")
-    session.run("MATCH (lineitem1: Lineitem{l_linenumber: 1}), (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 1}) "
+    session.run("MATCH (lineitem1: Lineitem{l_linenumber: 1}), (partsupp1: PartSupp{ps_suppkey: 1, ps_partkey: 'partSupp1'}) "
                 "CREATE (lineitem1) -[:BELONGS_TO]-> (partsupp1)")
-    session.run("MATCH (lineitem2: Lineitem{l_linenumber: 2}), (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 2}) "
+    session.run("MATCH (lineitem2: Lineitem{l_linenumber: 2}), (partsupp2: PartSupp{ps_suppkey: 2, ps_partkey: 'partSupp2'}) "
                 "CREATE (lineitem2) -[:BELONGS_TO]-> (partsupp2)")
-    session.run("MATCH (lineitem3: Lineitem{l_linenumber: 3}), (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 3}) "
+    session.run("MATCH (lineitem3: Lineitem{l_linenumber: 3}), (partsupp3: PartSupp{ps_suppkey: 3, ps_partkey: 'partSupp3'}) "
                 "CREATE (lineitem3) -[:BELONGS_TO]-> (partsupp3)")
-    session.run("MATCH (lineitem4: Lineitem{l_linenumber: 4}), (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 4}) "
+    session.run("MATCH (lineitem4: Lineitem{l_linenumber: 4}), (partsupp4: PartSupp{ps_suppkey: 4, ps_partkey: 'partSupp4'}) "
                 "CREATE (lineitem4) -[:BELONGS_TO]-> (partsupp4)")
-    session.run("MATCH (lineitem5: Lineitem{l_linenumber: 5}), (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 5}) "
+    session.run("MATCH (lineitem5: Lineitem{l_linenumber: 5}), (partsupp5: PartSupp{ps_suppkey: 5, ps_partkey: 'partSupp5'}) "
                 "CREATE (lineitem5) -[:BELONGS_TO]-> (partsupp5)")
-    session.run("MATCH (lineitem6: Lineitem{l_linenumber: 6}), (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 6}) "
+    session.run("MATCH (lineitem6: Lineitem{l_linenumber: 6}), (partsupp6: PartSupp{ps_suppkey: 6, ps_partkey: 'partSupp6'}) "
                 "CREATE (lineitem6) -[:BELONGS_TO]-> (partsupp6)")
-    session.run("MATCH (lineitem7: Lineitem{l_linenumber: 7}), (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 7}) "
+    session.run("MATCH (lineitem7: Lineitem{l_linenumber: 7}), (partsupp7: PartSupp{ps_suppkey: 7, ps_partkey: 'partSupp7'}) "
                 "CREATE (lineitem7) -[:BELONGS_TO]-> (partsupp7)")
-    session.run("MATCH (lineitem8: Lineitem{l_linenumber: 8}), (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 8}) "
+    session.run("MATCH (lineitem8: Lineitem{l_linenumber: 8}), (partsupp8: PartSupp{ps_suppkey: 8, ps_partkey: 'partSupp8'}) "
                 "CREATE (lineitem8) -[:BELONGS_TO]-> (partsupp8)")
-    session.run("MATCH (lineitem9: Lineitem{l_linenumber: 9}), (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 9}) "
+    session.run("MATCH (lineitem9: Lineitem{l_linenumber: 9}), (partsupp9: PartSupp{ps_suppkey: 9, ps_partkey: 'partSupp9'}) "
                 "CREATE (lineitem9) -[:BELONGS_TO]-> (partsupp9)")
 
 def print_all_nodes_and_relationships(session):
